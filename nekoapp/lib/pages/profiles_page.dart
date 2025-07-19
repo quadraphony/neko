@@ -81,7 +81,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
         filtered = filtered.where((p) => p.isFavorite).toList();
         break;
       case ProfileFilterBy.recent:
-        filtered = filtered.where((p) => p.lastUsed != null).toList();
+        filtered = filtered.where((p) => p.updatedAt != null).toList();
         break;
       case ProfileFilterBy.byGroup:
         if (_selectedGroup != null) {
@@ -108,14 +108,14 @@ class _ProfilesPageState extends State<ProfilesPage> {
         break;
       case ProfileSortBy.lastUsed:
         filtered.sort((a, b) {
-          if (a.lastUsed == null && b.lastUsed == null) return 0;
-          if (a.lastUsed == null) return 1;
-          if (b.lastUsed == null) return -1;
-          return b.lastUsed!.compareTo(a.lastUsed!);
+          if (a.updatedAt == null && b.updatedAt == null) return 0;
+          if (a.updatedAt == null) return 1;
+          if (b.updatedAt == null) return -1;
+          return b.updatedAt!.compareTo(a.updatedAt!);
         });
         break;
       case ProfileSortBy.dateAdded:
-        filtered.sort((a, b) => b.dateAdded.compareTo(a.dateAdded));
+        filtered.sort((a, b) => b.createdAt.compareTo(a.createdAt));
         break;
       case ProfileSortBy.protocol:
         filtered.sort((a, b) => a.protocol.toString().compareTo(b.protocol.toString()));
@@ -443,7 +443,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
       await vpnService.connect(profile);
       
       // Update last used timestamp
-      final updatedProfile = profile.copyWith(lastUsed: DateTime.now());
+      final updatedProfile = profile.copyWith(updatedAt: DateTime.now());
       await _storage.saveProfile(updatedProfile);
       _loadProfiles();
       
@@ -706,7 +706,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
   // Import methods
   void _importFromFile() async {
     try {
-      final result = await _importService.importFromFile();
+      final result = await ImportService.importFromFile();
       if (result.profiles.isNotEmpty) {
         for (final profile in result.profiles) {
           await _storage.saveProfile(profile);
@@ -729,7 +729,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
 
   void _importFromClipboard() async {
     try {
-      final result = await _importService.importFromClipboard();
+      final result = await ImportService.importFromClipboard();
       if (result.profiles.isNotEmpty) {
         for (final profile in result.profiles) {
           await _storage.saveProfile(profile);
@@ -758,7 +758,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
 
   void _scanQrCode() async {
     try {
-      final result = await _importService.scanQrCode();
+      final result = await ImportService.importFromQRCode("");
       if (result.profiles.isNotEmpty) {
         for (final profile in result.profiles) {
           await _storage.saveProfile(profile);
@@ -801,7 +801,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
             onPressed: () async {
               Navigator.of(context).pop();
               try {
-                final result = await _importService.importFromUrl(controller.text, name: 'Imported from URL');
+                final result = await ImportService.importFromUrl(controller.text, name: 'Imported from URL');
                 if (result.profiles.isNotEmpty) {
                   for (final profile in result.profiles) {
                     await _storage.saveProfile(profile);

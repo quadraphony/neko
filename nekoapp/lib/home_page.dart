@@ -289,19 +289,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: _getProtocolColor(profile.protocol),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                    color: _getProtocolColor(profile.protocol.toString().split(".").last),
                   child: Center(
                     child: Text(
-                      _getProtocolAbbreviation(profile.protocol),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
+                      _getProtocolAbbreviation(profile.protocol.toString().split(".").last),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -515,38 +506,38 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  Color _getProtocolColor(VpnProtocol protocol) {
+  Color _getProtocolColor(String protocol) {
     switch (protocol) {
-      case VpnProtocol.vmess:
+      case 'vmess':
         return Colors.blue;
-      case VpnProtocol.vless:
+      case 'vless':
         return Colors.green;
-      case VpnProtocol.trojan:
+      case 'trojan':
         return Colors.red;
-      case VpnProtocol.shadowsocks:
+      case 'shadowsocks':
         return Colors.purple;
-      case VpnProtocol.wireguard:
+      case 'wireguard':
         return Colors.orange;
       default:
         return Colors.grey;
     }
   }
 
-  String _getProtocolAbbreviation(VpnProtocol protocol) {
+  String _getProtocolAbbreviation(String protocol) {
     switch (protocol) {
-      case VpnProtocol.vmess:
+      case 'vmess':
         return 'VM';
-      case VpnProtocol.vless:
+      case 'vless':
         return 'VL';
-      case VpnProtocol.trojan:
+      case 'trojan':
         return 'TJ';
-      case VpnProtocol.shadowsocks:
+      case 'shadowsocks':
         return 'SS';
-      case VpnProtocol.wireguard:
+      case 'wireguard':
         return 'WG';
-      case VpnProtocol.socks:
+      case 'socks':
         return 'SK';
-      case VpnProtocol.http:
+      case 'http':
         return 'HT';
       default:
         return 'UN';
@@ -588,10 +579,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   void _navigateToTab(int index) {
-    final mainScreen = context.findAncestorStateOfType<_MainScreenState>();
-    mainScreen?.setState(() {
-      mainScreen._selectedIndex = index;
-    });
+    // This would need to be implemented based on the main screen structure
+    // For now, we'll just show a placeholder
   }
 
   void _showProfileSelectionDialog(VpnService vpnService) {
@@ -611,19 +600,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
-                    color: _getProtocolColor(profile.protocol),
+                    color: _getProtocolColor(profile.protocol.toString().split(".").last),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Center(
                     child: Text(
-                      _getProtocolAbbreviation(profile.protocol),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ),
+                      _getProtocolAbbreviation(profile.protocol.toString().split(".").last),
                 ),
                 title: Text(profile.name),
                 subtitle: Text('${profile.server}:${profile.port}'),

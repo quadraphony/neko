@@ -73,7 +73,7 @@ class AppSettings {
   final bool bandwidthLimitEnabled;
   final int uploadSpeedLimit;
   final int downloadSpeedLimit;
-  final ThemeMode theme;
+  final ThemeMode themeMode;
   final bool notificationsEnabled;
   final bool systemTrayEnabled;
   final String language;
@@ -147,7 +147,7 @@ class AppSettings {
     this.bandwidthLimitEnabled = false,
     this.uploadSpeedLimit = 0,
     this.downloadSpeedLimit = 0,
-    this.theme = 'system',
+    this.themeMode = ThemeMode.system,
     this.notificationsEnabled = true,
     this.systemTrayEnabled = true,
     this.language = 'en',
@@ -241,8 +241,8 @@ class AppSettings {
       bandwidthLimitEnabled: json['bandwidthLimitEnabled'] ?? false,
       uploadSpeedLimit: json['uploadSpeedLimit'] ?? 0,
       downloadSpeedLimit: json['downloadSpeedLimit'] ?? 0,
-      theme: ThemeMode.values.firstWhere(
-        (e) => e.toString().split(".").last == json["theme"],
+      themeMode: ThemeMode.values.firstWhere(
+        (e) => e.toString().split(".").last == json["themeMode"],
         orElse: () => ThemeMode.system,
       ),
       notificationsEnabled: json['notificationsEnabled'] ?? true,
@@ -321,7 +321,7 @@ class AppSettings {
       'bandwidthLimitEnabled': bandwidthLimitEnabled,
       'uploadSpeedLimit': uploadSpeedLimit,
       'downloadSpeedLimit': downloadSpeedLimit,
-      'theme': theme.toString().split('.').last,
+      'themeMode': themeMode.toString().split('.').last,
       'notificationsEnabled': notificationsEnabled,
       'systemTrayEnabled': systemTrayEnabled,
       'language': language,
@@ -386,7 +386,7 @@ class AppSettings {
     bool? bandwidthLimitEnabled,
     int? uploadSpeedLimit,
     int? downloadSpeedLimit,
-    ThemeMode? theme,
+    ThemeMode? themeMode,
     bool? notificationsEnabled,
     bool? systemTrayEnabled,
     String? language,
@@ -449,7 +449,7 @@ class AppSettings {
       bandwidthLimitEnabled: bandwidthLimitEnabled ?? this.bandwidthLimitEnabled,
       uploadSpeedLimit: uploadSpeedLimit ?? this.uploadSpeedLimit,
       downloadSpeedLimit: downloadSpeedLimit ?? this.downloadSpeedLimit,
-      theme: theme ?? this.theme,
+      themeMode: themeMode ?? this.themeMode,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       systemTrayEnabled: systemTrayEnabled ?? this.systemTrayEnabled,
       language: language ?? this.language,
@@ -458,3 +458,5 @@ class AppSettings {
     );
   }
 }
+
+

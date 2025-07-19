@@ -39,11 +39,7 @@ class _LogsPageState extends State<LogsPage> {
     return Consumer<VpnService>(
       builder: (context, vpnService, child) {
         final filteredLogs = vpnService.getFilteredLogs(
-          level: _logLevelFilter.toString().split(
-                  
-.
-
-).last.toUpperCase(),
+          level: _logLevelFilter.toString().split('.').last.toUpperCase(),
           search: _searchController.text,
         );
 
@@ -122,11 +118,7 @@ class _LogsPageState extends State<LogsPage> {
                 items: LogLevelFilter.values.map((filter) {
                   return DropdownMenuItem(
                     value: filter,
-                    child: Text(filter.toString().split(
-                  
-.
-
-).last.toUpperCase()),
+                    child: Text(filter.toString().split('.').last.toUpperCase()),
                   );
                 }).toList(),
               ),

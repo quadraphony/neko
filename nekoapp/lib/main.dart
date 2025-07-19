@@ -10,7 +10,7 @@ import 'models/app_settings.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await StorageService().init(); // Initialize storage
+
   runApp(const MyApp());
 }
 
@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> {
     final settingsMap = await StorageService().loadSettings();
     final settings = AppSettings.fromJson(settingsMap);
     setState(() {
-      _themeMode = _getThemeModeFromString(settings.theme);
+      _themeMode = settings.themeMode;
     });
   }
 
@@ -45,8 +45,9 @@ class _MyAppState extends State<MyApp> {
       _themeMode = themeMode;
     });
     // Save theme preference
-    final currentSettings = AppSettings.fromJson(StorageService().currentSettings);
-    StorageService().saveSettings(currentSettings.copyWith(theme: themeMode.toString().split('.').last).toJson());
+    final settingsMap = await StorageService().loadSettings();
+    final currentSettings = AppSettings.fromJson(settingsMap);
+    StorageService().saveSettings(currentSettings.copyWith(themeMode: themeMode).toJson());
   }
 
   ThemeMode _getThemeModeFromString(String theme) {
