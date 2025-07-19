@@ -1,0 +1,130 @@
+group = 'com.example.flutter_nekokit'
+version = '1.0'
+
+buildscript {
+   ext.kotlin_version = '2.0.20'
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.4.0' // Use a compatible Gradle version
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        // Add a local 'libs' directory for AAR/JAR files if needed for NekoBoxForAndroid's libcore
+        flatDir {
+            dirs 'libs'
+        }
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    namespace 'com.example.flutter_nekokit'
+    compileSdk 35
+
+    buildFeatures {
+        aidl = true
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        main.aidl.srcDirs += 'src/main/aidl'
+    }
+
+    defaultConfig {
+        minSdkVersion 21 // Minimum Android SDK version
+        // You might need to adjust this based on NekoBoxForAndroid's requirements
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs += 'src/main/kotlin'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs = ['src/main/kotlin', 'src/main/java'] // Support both Kotlin and Java
+        }
+    }
+}
+
+dependencies {
+    implementation files("libs/libcore.aar")
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+
+    // Add NekoBoxForAndroid core dependencies here
+    // For example, if NekoBoxForAndroid provides a pre-built AAR:
+    // implementation files('libs/nekobox-core.aar')
+    // Or if it's a local project dependency:
+    // implementation project(':nekobox_core_module')
+
+    // For now, we'll add a placeholder for the sing-box core, as direct integration is complex.
+    // You will need to build the sing-box core for Android and include it here.
+    // This is a simplified placeholder and will require actual sing-box AAR/JAR files.
+    // Example: implementation 'com.github.nekobox:singbox-android:1.0.0' (if they publish to Maven)
+
+    // Placeholder for sing-box core. This will need to be replaced with actual dependencies.
+    // This is a complex step that involves building the sing-box Go code for Android.
+    // For a full implementation, you would typically:
+    // 1. Compile the Go sing-box library for Android (using gomobile or similar).
+    // 2. Include the resulting AAR/JAR in your project.
+    // For now, we'll assume a pre-built library or a module that contains it.
+    // As a starting point, we'll add a dependency that might be similar to what NekoBox uses.
+    // This is a *highly simplified* representation and will require significant manual work
+    // to get the actual sing-box core integrated.
+    // The NekoBoxForAndroid project uses `libcore` which is a Go module.
+    // You would need to compile this Go module into an Android AAR.
+    // This is beyond the scope of a direct code generation without manual compilation steps.
+    // Therefore, I will provide a comment indicating where this dependency should go.
+
+    // Example of how NekoBoxForAndroid might include its core:
+    // implementation project(':libcore') // If libcore is a separate module in the same project
+
+    // For this plugin, you would likely need to either:
+    // a) Build the libcore from NekoBoxForAndroid as an AAR and include it as a local file.
+    // b) Depend on a published version of libcore if it were available on Maven.
+
+    // Since I cannot compile Go code to AAR directly, I will leave this as a comment.
+    // You would need to manually compile the sing-box core (libcore) from NekoBoxForAndroid
+    // into an Android AAR and place it in the 'libs' folder of this Android module.
+    // Then, you would add: implementation files('libs/libcore.aar')
+
+    // For now, we'll just add a general dependency that might be present in a typical Android project
+    // that uses some networking or utility functions, as a placeholder.
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+}
+
+
