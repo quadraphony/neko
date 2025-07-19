@@ -163,6 +163,29 @@ class VpnService extends ChangeNotifier {
     }
   }
 
+  Future<void> refreshStats() async {
+    try {
+      final statsJson = await _nekokit.getConnectionStats();
+      final statsData = jsonDecode(statsJson);
+
+      final connectionTime = _connectionStartTime != null
+          ? DateTime.now().difference(_connectionStartTime!)
+          : Duration.zero;
+
+      _stats = VpnConnectionStats(
+        uploadBytes: statsData["uploadBytes"] ?? 0,
+        downloadBytes: statsData["downloadBytes"] ?? 0,
+        connectionTime: connectionTime,
+        serverLocation: _activeProfile?.server ?? "Unknown",
+        ping: statsData["ping"] ?? 0,
+      );
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Failed to refresh stats: $e");
+    }
+  }
+
   Future<void> addProfile(VpnProfile profile) async {
     _profiles.add(profile);
     await _storage.saveProfiles(_profiles);
@@ -204,10 +227,6 @@ class VpnService extends ChangeNotifier {
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: name,
         subscriptionUrl: url,
-        profiles: profiles,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        isSubscription: true,
       );
 
       await addGroup(group);
@@ -247,10 +266,6 @@ class VpnService extends ChangeNotifier {
         id: group.id,
         name: group.name,
         subscriptionUrl: group.subscriptionUrl,
-        profiles: newProfiles,
-        createdAt: group.createdAt,
-        updatedAt: DateTime.now(),
-        isSubscription: group.isSubscription,
       );
       
       final index = _groups.indexWhere((g) => g.id == groupId);

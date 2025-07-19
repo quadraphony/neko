@@ -41,7 +41,7 @@ class SubscriptionService {
     }
   }
 
-  static List<VpnProfile> parseClashSubscription(String content) {
+  List<VpnProfile> _parseClashSubscription(String content) {
     final profiles = <VpnProfile>[];
     
     try {
@@ -162,7 +162,7 @@ class SubscriptionService {
     }
   }
 
-  static List<VpnProfile> parseShareLinks(String content) {
+  List<VpnProfile> _parseShareLinks(String content) {
     final profiles = <VpnProfile>[];
     final lines = content.split('\n');
     

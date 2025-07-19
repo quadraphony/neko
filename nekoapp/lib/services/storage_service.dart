@@ -76,7 +76,7 @@ class StorageService {
       final contents = await file.readAsString();
       final List<dynamic> jsonList = jsonDecode(contents);
       
-      return jsonList.map((json) => VpnGroup.fromJson(json)).toList();
+      return jsonList.map((json) => VpnGroup.fromJson(json)).toList().cast<VpnGroup>();
     } catch (e) {
       print('Error loading groups: $e');
       return [];
@@ -252,7 +252,7 @@ class StorageService {
       
       // Restore groups
       final List<dynamic> groupsJson = data['groups'];
-      final groups = groupsJson.map((json) => VpnGroup.fromJson(json)).toList();
+      final groups = groupsJson.map((json) => VpnGroup.fromJson(json)).toList().cast<VpnGroup>();
       await saveGroups(groups);
       
       // Restore settings

@@ -40,7 +40,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  void setThemeMode(ThemeMode themeMode) {
+  void setThemeMode(ThemeMode themeMode) async {
     setState(() {
       _themeMode = themeMode;
     });

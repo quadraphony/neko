@@ -443,7 +443,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
       await vpnService.connect(profile);
       
       // Update last used timestamp
-      final updatedProfile = profile.copyWith(updatedAt: DateTime.now());
+      final updatedProfile = profile.copyWith();
       await _storage.saveProfile(updatedProfile);
       _loadProfiles();
       
@@ -479,7 +479,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
     final duplicatedProfile = profile.copyWith(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: '${profile.name} (Copy)',
-      dateAdded: DateTime.now(),
+      createdAt: DateTime.now(),
       lastUsed: null,
     );
     
