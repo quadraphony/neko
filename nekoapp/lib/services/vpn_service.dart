@@ -261,7 +261,7 @@ class VpnService extends ChangeNotifier {
       }
       
       // Update group
-      final updatedGroup = VpnGroup(
+      final updatedGroup = group.copyWith(
         id: group.id,
         name: group.name,
         subscriptionUrl: group.subscriptionUrl,
@@ -420,4 +420,7 @@ class VpnService extends ChangeNotifier {
     super.dispose();
   }
 }
+
+
+import 'package:nekobox_app/models/vpn_group.dart';
 
