@@ -4,8 +4,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../models/vpn_profile.dart' show VpnProfile;
 import '../models/vpn_group.dart';
-import '../models/vpn_protocol.dart';
-
 import 'encryption_service.dart';
 
 class ExportService {

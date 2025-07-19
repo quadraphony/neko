@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-
 enum VpnProtocol {
   socks,
   http,
