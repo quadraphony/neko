@@ -480,7 +480,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: '${profile.name} (Copy)',
       createdAt: DateTime.now(),
-      lastUsed: null,
+      updatedAt: DateTime.now(),
     );
     
     Navigator.of(context).push(

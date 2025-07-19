@@ -88,7 +88,7 @@ class ImportService {
 
       // Check if it's a single share link
       if (_isSingleShareLink(content)) {
-        final profiles = SubscriptionService.parseShareLinks(content);
+        final profiles = _subscription.parseShareLinks(content);
         return ImportResult(
           profiles: profiles,
           groups: [],
@@ -99,7 +99,7 @@ class ImportService {
 
       // Check if it's multiple share links
       if (_isMultipleShareLinks(content)) {
-        final profiles = SubscriptionService.parseShareLinks(content);
+        final profiles = _subscription.parseShareLinks(content);
         return ImportResult(
           profiles: profiles,
           groups: [],
@@ -110,7 +110,7 @@ class ImportService {
 
       // Check if it's Clash format
       if (_isClashFormat(content)) {
-        final profiles = SubscriptionService.parseClashSubscription(content);
+        final profiles = _subscription.parseClashSubscription(content);
         return ImportResult(
           profiles: profiles,
           groups: [],
