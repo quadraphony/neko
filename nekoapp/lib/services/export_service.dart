@@ -101,7 +101,7 @@ class ExportService {
       };
       
       final exportData = EncryptionService.createNapsternetExport(
-        jsonEncode(backupData),
+        backupData,
         password: password,
         metadata: {
           'export_type': 'backup',

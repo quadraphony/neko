@@ -476,12 +476,11 @@ class _ProfilesPageState extends State<ProfilesPage> {
   }
 
   void _duplicateProfile(VpnProfile profile) {
-    final duplicatedProfile = profile.copyWith(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+    final duplicatedProfile = profile.copyWithsecondsSinceEpoch.toString(),
       name: '${profile.name} (Copy)',
 
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
+
+
     );
     
     Navigator.of(context).push(

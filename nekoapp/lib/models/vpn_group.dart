@@ -30,12 +30,12 @@ class VpnGroup {
   VpnGroup copyWith({
     String? id,
     String? name,
-    ValueNotifier<String?>? subscriptionUrl,
+    String? subscriptionUrl,
   }) {
     return VpnGroup(
       id: id ?? this.id,
       name: name ?? this.name,
-      subscriptionUrl: subscriptionUrl != null ? subscriptionUrl.value : this.subscriptionUrl,
+      subscriptionUrl: subscriptionUrl ?? this.subscriptionUrl,
     );
   }
 }
