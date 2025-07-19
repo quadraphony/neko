@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
+    return ChangeNotifierProvider<VpnService>(
       create: (context) => VpnService()..initialize(),
       child: MaterialApp(
         title: 'NekoBox VPN',
