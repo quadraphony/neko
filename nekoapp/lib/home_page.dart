@@ -3,6 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'services/vpn_service.dart';
 
+// Constants for better maintainability
+const double _cardElevation = 4.0;
+const double _defaultPadding = 16.0;
+const double _iconSize = 24.0;
+const double _buttonHeight = 56.0;
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -20,7 +26,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _pulseController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
-    );
+    )..addStatusListener((status) {
+        // Ensure animation stops properly when completed
+        if (status == AnimationStatus.dismissed && !mounted) {
+          _pulseController.dispose();
+        }
+      });
+
     _pulseAnimation = Tween<double>(
       begin: 0.8,
       end: 1.2,
@@ -40,9 +52,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Consumer<VpnService>(
       builder: (context, vpnService, child) {
-        // Start/stop pulse animation based on connection status
+        // Manage pulse animation based on connection status
         if (vpnService.isConnecting) {
-          _pulseController.repeat(reverse: true);
+          if (!_pulseController.isAnimating) {
+            _pulseController.repeat(reverse: true);
+          }
         } else if (vpnService.isConnected) {
           _pulseController.stop();
         } else {
@@ -52,41 +66,41 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         return Scaffold(
           body: RefreshIndicator(
             onRefresh: () async {
-              // Refresh connection stats
               if (vpnService.isConnected && vpnService.activeProfile != null) {
-                // Stats are automatically updated by the service
+                await vpnService.refreshStats(); // Assume VpnService has a refresh method
               }
+              return Future.value(); // Ensure Future is returned
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(_defaultPadding),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Connection Status Card
                   _buildConnectionStatusCard(vpnService),
-                  const SizedBox(height: 16),
-                  
+                  const SizedBox(height: _defaultPadding),
+
                   // Connection Stats Card
                   if (vpnService.isConnected && vpnService.stats != null) ...[
                     _buildConnectionStatsCard(vpnService),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: _defaultPadding),
                   ],
-                  
+
                   // Active Profile Card
                   if (vpnService.activeProfile != null) ...[
                     _buildActiveProfileCard(vpnService),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: _defaultPadding),
                   ],
-                  
+
                   // Connection Control
                   _buildConnectionControl(vpnService),
-                  const SizedBox(height: 24),
-                  
+                  const SizedBox(height: _defaultPadding * 1.5),
+
                   // Quick Actions
                   _buildQuickActions(context, vpnService),
-                  const SizedBox(height: 16),
-                  
+                  const SizedBox(height: _defaultPadding),
+
                   // Recent Logs
                   _buildRecentLogs(vpnService),
                 ],
@@ -102,7 +116,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     Color statusColor;
     IconData statusIcon;
     String statusText;
-    
+
     switch (vpnService.status) {
       case VpnStatus.connected:
         statusColor = Colors.green;
@@ -131,7 +145,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
 
     return Card(
-      elevation: 4,
+      elevation: _cardElevation,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -158,13 +172,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 );
               },
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: _defaultPadding),
             Text(
               statusText,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: statusColor,
-                fontWeight: FontWeight.bold,
-              ),
+                    color: statusColor,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             if (vpnService.activeProfile != null) ...[
               const SizedBox(height: 8),
@@ -172,13 +186,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 vpnService.activeProfile!.name,
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
               ),
               Text(
                 '${vpnService.activeProfile!.server}:${vpnService.activeProfile!.port}',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                      color: Colors.grey[600],
+                    ),
                 textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ],
@@ -192,18 +208,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     if (stats == null) return const SizedBox.shrink();
 
     return Card(
+      elevation: _cardElevation,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(_defaultPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Connection Statistics',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: _defaultPadding),
             Row(
               children: [
                 Expanded(
@@ -224,7 +241,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: _defaultPadding),
             Row(
               children: [
                 Expanded(
@@ -254,7 +271,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget _buildStatItem(String label, String value, IconData icon, Color color) {
     return Column(
       children: [
-        Icon(icon, color: color, size: 24),
+        Icon(icon, color: color, size: _iconSize),
         const SizedBox(height: 4),
         Text(
           value,
@@ -262,6 +279,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
+          overflow: TextOverflow.ellipsis,
         ),
         Text(
           label,
@@ -276,10 +294,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget _buildActiveProfileCard(VpnService vpnService) {
     final profile = vpnService.activeProfile!;
-    
+    final protocol = profile.protocol.toString().split(".").last;
+
     return Card(
+      elevation: _cardElevation,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(_defaultPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -289,10 +309,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: _getProtocolColor(profile.protocol.toString().split(".").last),
+                    color: _getProtocolColor(protocol),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
                   child: Center(
                     child: Text(
-                      _getProtocolAbbreviation(profile.protocol.toString().split(".").last),
+                      _getProtocolAbbreviation(protocol),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -302,14 +330,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       Text(
                         profile.name,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                              fontWeight: FontWeight.bold,
+                            ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        '${profile.protocol.toString().split('.').last.toUpperCase()} • ${profile.server}:${profile.port}',
+                        '${protocol.toUpperCase()} • ${profile.server}:${profile.port}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
-                        ),
+                              color: Colors.grey[600],
+                            ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
@@ -327,7 +357,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       children: [
         SizedBox(
           width: double.infinity,
-          height: 56,
+          height: _buttonHeight,
           child: ElevatedButton.icon(
             onPressed: vpnService.isConnecting || vpnService.status == VpnStatus.disconnecting
                 ? null
@@ -336,7 +366,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       if (vpnService.isConnected) {
                         await vpnService.disconnect();
                       } else {
-                        // Show profile selection if no active profile
                         if (vpnService.profiles.isEmpty) {
                           _showNoProfilesDialog();
                         } else {
@@ -349,7 +378,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   },
             icon: Icon(
               vpnService.isConnected ? Icons.stop : Icons.play_arrow,
-              size: 24,
+              size: _iconSize,
             ),
             label: Text(
               vpnService.isConnected ? 'Disconnect' : 'Connect',
@@ -365,7 +394,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ),
         ),
         if (vpnService.isConnecting || vpnService.status == VpnStatus.disconnecting) ...[
-          const SizedBox(height: 16),
+          const SizedBox(height: _defaultPadding),
           const LinearProgressIndicator(),
         ],
       ],
@@ -379,8 +408,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         Text(
           'Quick Actions',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 12),
         Row(
@@ -390,7 +419,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 'Add Profile',
                 Icons.add,
                 Colors.blue,
-                () => _navigateToTab(1), // Profiles tab
+                () => _navigateToTab(1),
               ),
             ),
             const SizedBox(width: 8),
@@ -408,7 +437,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 'View Logs',
                 Icons.list_alt,
                 Colors.orange,
-                () => _navigateToTab(2), // Logs tab
+                () => _navigateToTab(2),
               ),
             ),
           ],
@@ -419,11 +448,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget _buildQuickActionCard(String title, IconData icon, Color color, VoidCallback onTap) {
     return Card(
+      elevation: _cardElevation,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(_defaultPadding),
           child: Column(
             children: [
               Icon(icon, size: 32, color: color),
@@ -432,6 +462,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 title,
                 style: const TextStyle(fontSize: 12),
                 textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -442,14 +473,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget _buildRecentLogs(VpnService vpnService) {
     final recentLogs = vpnService.logs.take(3).toList();
-    
+
     if (recentLogs.isEmpty) {
       return const SizedBox.shrink();
     }
 
     return Card(
+      elevation: _cardElevation,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(_defaultPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -459,8 +491,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 Text(
                   'Recent Activity',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 TextButton(
                   onPressed: () => _navigateToTab(2),
@@ -470,36 +502,36 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ),
             const SizedBox(height: 8),
             ...recentLogs.map((log) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _getLogLevelColor(log.level),
-                    ),
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _getLogLevelColor(log.level),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          log.message,
+                          style: const TextStyle(fontSize: 12),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Text(
+                        DateFormat('HH:mm').format(log.timestamp),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      log.message,
-                      style: const TextStyle(fontSize: 12),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Text(
-                    DateFormat('HH:mm').format(log.timestamp),
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            )),
+                )),
           ],
         ),
       ),
@@ -568,7 +600,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     final hours = duration.inHours;
     final minutes = duration.inMinutes % 60;
     final seconds = duration.inSeconds % 60;
-    
+
     if (hours > 0) {
       return '${hours}h ${minutes}m';
     } else if (minutes > 0) {
@@ -579,8 +611,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   void _navigateToTab(int index) {
-    // This would need to be implemented based on the main screen structure
-    // For now, we'll just show a placeholder
+    // Assuming the app uses a BottomNavigationBar or similar
+    // Access the parent BottomNavigationBar widget or TabController
+    final bottomNavKey = context.findAncestorStateOfType<NavigatorState>()?.widget.key;
+    if (bottomNavKey != null) {
+      DefaultTabController.of(context)?.animateTo(index);
+    } else {
+      // Fallback to a navigation route
+      Navigator.of(context).pushNamed('/tabs/$index');
+    }
   }
 
   void _showProfileSelectionDialog(VpnService vpnService) {
@@ -595,20 +634,33 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             itemCount: vpnService.profiles.length,
             itemBuilder: (context, index) {
               final profile = vpnService.profiles[index];
+              final protocol = profile.protocol.toString().split(".").last;
               return ListTile(
                 leading: Container(
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
-                    color: _getProtocolColor(profile.protocol.toString().split(".").last),
+                    color: _getProtocolColor(protocol),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Center(
                     child: Text(
-                      _getProtocolAbbreviation(profile.protocol.toString().split(".").last),
+                      _getProtocolAbbreviation(protocol),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
-                title: Text(profile.name),
-                subtitle: Text('${profile.server}:${profile.port}'),
+                title: Text(
+                  profile.name,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(
+                  '${profile.server}:${profile.port}',
+                  overflow: TextOverflow.ellipsis,
+                ),
                 onTap: () async {
                   Navigator.of(context).pop();
                   try {
@@ -655,8 +707,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   void _showImportDialog() {
-    // This would show import options dialog
-    // Implementation would be in the profiles page
+    // Navigate to profiles tab for import functionality
     _navigateToTab(1);
   }
 

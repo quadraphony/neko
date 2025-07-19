@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import '../models/vpn_profile.dart';
+import '../models/vpn_profile.dart' show VpnProfile;
 import '../models/vpn_group.dart';
 
 
