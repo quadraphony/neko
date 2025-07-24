@@ -11,7 +11,13 @@ import 'models/app_settings.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(const MyApp());
+  final vpnService = VpnService();
+  await vpnService.initialize();
+
+  runApp(ChangeNotifierProvider<VpnService>(
+    create: (context) => vpnService,
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {

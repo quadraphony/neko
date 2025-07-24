@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:nekobox_app/services/vpn_service.dart';
-import 'package:nekobox_app/models/vpn_status.dart';
-
 // Constants for better maintainability
 const double _cardElevation = 4.0;
 const double _defaultPadding = 16.0;

@@ -482,7 +482,6 @@ class _ProfilesPageState extends State<ProfilesPage> {
 
       updatedAt: DateTime.now(),
     );
-    
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => ProfileEditor(
