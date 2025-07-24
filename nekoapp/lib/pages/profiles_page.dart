@@ -479,7 +479,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
     final duplicatedProfile = profile.copyWith(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: '${profile.name} (Copy)',
-      createdAt: DateTime.now(),
+
       updatedAt: DateTime.now(),
     );
     
